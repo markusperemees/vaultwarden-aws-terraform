@@ -2,10 +2,11 @@ name: Terraform CI
 
 on:
   pull_request:
-    branches:
-      - main
+    branches: [main]
     paths:
       - "bootstrap/**"
+      - "modules/**"
+      - "environments/prod/**"
       - ".github/workflows/terraform-ci.yml"
   workflow_dispatch:
 
@@ -20,9 +21,6 @@ concurrency:
 jobs:
   bootstrap:
     name: Bootstrap plan
-    if: >
-      github.event_name == 'workflow_dispatch' ||
-      github.event.pull_request.head.repo.full_name == github.repository
     runs-on: ubuntu-latest
 
     defaults:
@@ -39,34 +37,52 @@ jobs:
       TF_VAR_github_owner_id: ${{ github.repository_owner_id }}
       TF_VAR_github_repository: ${{ github.event.repository.name }}
       TF_VAR_github_repository_id: ${{ github.repository_id }}
-      
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
 
-      - name: Set up Terraform
-        uses: hashicorp/setup-terraform@v3
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: hashicorp/setup-terraform@v3
         with:
           terraform_version: 1.15.8
 
-      - name: Terraform format
-        run: terraform fmt -check
-      
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v6
+      - run: terraform fmt -check -recursive
+
+      - uses: aws-actions/configure-aws-credentials@v6
         with:
           role-to-assume: ${{ vars.AWS_TERRAFORM_PLAN_ROLE_ARN }}
           aws-region: ${{ env.AWS_REGION }}
-          role-session-name: terraform-ci
 
-      - name: Verify AWS identity
-        run: aws sts get-caller-identity
+      - run: terraform init -input=false
+      - run: terraform validate -no-color
+      - run: terraform plan -input=false -no-color -lock-timeout=5m
 
-      - name: Terraform initialize
-        run: terraform init -input=false
+  prod:
+    name: Production plan
+    runs-on: ubuntu-latest
 
-      - name: Terraform validate
-        run: terraform validate -no-color
+    defaults:
+      run:
+        working-directory: environments/prod
 
-      - name: Terraform plan
-        run: terraform plan -input=false -no-color -lock-timeout=5m
+    env:
+      AWS_REGION: eu-north-1
+      TF_IN_AUTOMATION: "true"
+      TF_INPUT: "false"
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.15.8
+
+      - run: terraform fmt -check -recursive
+
+      - uses: aws-actions/configure-aws-credentials@v6
+        with:
+          role-to-assume: ${{ vars.AWS_TERRAFORM_PLAN_ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - run: terraform init -input=false
+      - run: terraform validate -no-color
+      - run: terraform plan -var-file=terraform.tfvars.example -input=false -no-color -lock-timeout=5m
