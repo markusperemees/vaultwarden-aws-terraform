@@ -29,3 +29,15 @@ variable "state_bucket_name" {
     error_message = "The S3 bucket name is invalid."
   }
 }
+
+variable "github_owner" {
+  type        = string
+  description = "GitHub repository owner."
+  nullable    = false
+}
+
+variable "github_repository" {
+  type        = string
+  description = "GitHub repository name."
+  nullable    = false
+}

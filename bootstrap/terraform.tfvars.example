@@ -1,2 +1,4 @@
 aws_region        = "eu-north-1"
 state_bucket_name = "vaultwarden-ACCOUNT_ID-eu-north-1-tfstate"
+github_owner      = "your-github-username"
+github_repository = "your-project-repository"
