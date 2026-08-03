@@ -36,7 +36,19 @@ variable "github_owner_id" {
   nullable    = false
 }
 
+variable "github_owner" {
+  type        = string
+  description = "GitHub repository owner."
+  nullable    = false
+}
+
 variable "github_repository_id" {
+  type        = string
+  description = "GitHub repository name."
+  nullable    = false
+}
+
+variable "github_repository" {
   type        = string
   description = "GitHub repository name."
   nullable    = false
