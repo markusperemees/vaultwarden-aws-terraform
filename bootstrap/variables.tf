@@ -30,13 +30,13 @@ variable "state_bucket_name" {
   }
 }
 
-variable "github_owner" {
+variable "github_owner_id" {
   type        = string
   description = "GitHub repository owner."
   nullable    = false
 }
 
-variable "github_repository" {
+variable "github_repository_id" {
   type        = string
   description = "GitHub repository name."
   nullable    = false
