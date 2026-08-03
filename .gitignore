@@ -1,0 +1,33 @@
+# Terraform working directories
+**/.terraform/*
+
+# Terraform state
+*.tfstate
+*.tfstate.*
+*.tfplan
+
+# Variable files that may contain sensitive values
+*.tfvars
+*.tfvars.json
+
+# Crash logs
+crash.log
+crash.*.log
+
+# Local override files
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+
+# CLI configuration
+.terraformrc
+terraform.rc
+
+# Keep provider lock files
+!.terraform.lock.hcl
+
+# IDE and operating system
+.idea/
+.vscode/
+.DS_Store
