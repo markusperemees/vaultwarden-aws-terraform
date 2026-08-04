@@ -28,3 +28,9 @@ module "rds" {
 
   engine_version = var.db_engine_version
 }
+
+module "secrets" {
+  source = "../../modules/secrets"
+
+  name_prefix = "${local.project_name}-${local.environment}"
+}
