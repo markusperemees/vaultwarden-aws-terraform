@@ -34,3 +34,14 @@ module "secrets" {
 
   name_prefix = "${local.project_name}-${local.environment}"
 }
+
+module "iam" {
+  source = "../../modules/iam"
+
+  name_prefix = "${local.project_name}-${local.environment}"
+
+  secret_arns = [
+    module.secrets.vaultwarden_secret_arn,
+    module.rds.master_user_secret_arn
+  ]
+}
