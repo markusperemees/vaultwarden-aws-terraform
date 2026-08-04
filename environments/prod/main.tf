@@ -11,3 +11,10 @@ module "ecr" {
 
   ecr_repository_name = "${local.project_name}-${local.environment}"
 }
+
+module "security" {
+  source = "../../modules/security"
+
+  name_prefix = "${local.project_name}-${local.environment}"
+  vpc_id      = module.network.vpc_id
+}
