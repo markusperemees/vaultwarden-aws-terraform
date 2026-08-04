@@ -32,3 +32,9 @@ variable "domain_name" {
   description = "Root domain name managed in Route53."
   nullable    = false
 }
+
+variable "vaultwarden_domain_name" {
+  type        = string
+  description = "Fully qualified domain name used by Vaultwarden."
+  nullable    = false
+}
