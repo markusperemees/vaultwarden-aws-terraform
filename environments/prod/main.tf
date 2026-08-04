@@ -45,3 +45,9 @@ module "iam" {
     module.rds.master_user_secret_arn
   ]
 }
+
+module "route53" {
+  source = "../../modules/route53"
+
+  domain_name = var.domain_name
+}
