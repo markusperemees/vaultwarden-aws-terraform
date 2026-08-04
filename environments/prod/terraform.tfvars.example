@@ -14,3 +14,5 @@ subnets = {
     db_cidr     = "10.0.21.0/24"
   }
 }
+
+db_engine_version = "17.10"
