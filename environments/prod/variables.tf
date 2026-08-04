@@ -26,3 +26,9 @@ variable "db_engine_version" {
   description = "PostgreSQL engine version."
   nullable    = false
 }
+
+variable "domain_name" {
+  type        = string
+  description = "Root domain name managed in Route53."
+  nullable    = false
+}
