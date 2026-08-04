@@ -16,4 +16,4 @@ subnets = {
 }
 
 db_engine_version = "17.10"
-domain_name = "your-domain"
+domain_name = "example.tech"
