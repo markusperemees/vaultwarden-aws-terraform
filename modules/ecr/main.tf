@@ -40,10 +40,10 @@ resource "aws_ecr_lifecycle_policy" "this" {
         description  = "Keep the latest 10 tagged images"
 
         selection = {
-          tagStatus     = "tagged"
+          tagStatus      = "tagged"
           tagPatternList = ["*"]
-          countType     = "imageCountMoreThan"
-          countNumber   = 10
+          countType      = "imageCountMoreThan"
+          countNumber    = 10
         }
 
         action = {
