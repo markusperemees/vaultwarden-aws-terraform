@@ -12,16 +12,36 @@ on:
 
 permissions:
   contents: read
-  id-token: write
 
 concurrency:
   group: terraform-ci-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
+  format:
+    name: Terraform format
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.15.8
+
+      - name: Check Terraform formatting
+        run: terraform fmt -check -recursive -diff
+
   bootstrap:
     name: Bootstrap plan
+    needs: format
     runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    permissions:
+      contents: read
+      id-token: write
 
     defaults:
       run:
@@ -45,20 +65,30 @@ jobs:
         with:
           terraform_version: 1.15.8
 
-      - run: terraform fmt -check -recursive
-
-      - uses: aws-actions/configure-aws-credentials@v6
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v6
         with:
           role-to-assume: ${{ vars.AWS_TERRAFORM_PLAN_ROLE_ARN }}
           aws-region: ${{ env.AWS_REGION }}
 
-      - run: terraform init -input=false
-      - run: terraform validate -no-color
-      - run: terraform plan -input=false -no-color -lock-timeout=5m
+      - name: Terraform init
+        run: terraform init -input=false
+
+      - name: Terraform validate
+        run: terraform validate -no-color
+
+      - name: Terraform plan
+        run: terraform plan -input=false -no-color -lock-timeout=5m
 
   prod:
     name: Production plan
+    needs: format
     runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    permissions:
+      contents: read
+      id-token: write
 
     defaults:
       run:
@@ -70,19 +100,28 @@ jobs:
       TF_INPUT: "false"
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
-      - uses: hashicorp/setup-terraform@v3
+      - uses: hashicorp/setup-terraform@v4
         with:
           terraform_version: 1.15.8
 
-      - run: terraform fmt -check -recursive
-
-      - uses: aws-actions/configure-aws-credentials@v6
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v6
         with:
           role-to-assume: ${{ vars.AWS_TERRAFORM_PLAN_ROLE_ARN }}
           aws-region: ${{ env.AWS_REGION }}
 
-      - run: terraform init -input=false
-      - run: terraform validate -no-color
-      - run: terraform plan -var-file=terraform.tfvars.example -input=false -no-color -lock-timeout=5m
+      - name: Terraform init
+        run: terraform init -input=false
+
+      - name: Terraform validate
+        run: terraform validate -no-color
+
+      - name: Terraform plan
+        run: >-
+          terraform plan
+          -var-file=terraform.tfvars.example
+          -input=false
+          -no-color
+          -lock-timeout=5m
