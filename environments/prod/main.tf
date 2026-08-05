@@ -77,3 +77,11 @@ module "route53_record" {
   alb_dns_name = module.alb.load_balancer_dns_name
   alb_zone_id  = module.alb.load_balancer_zone_id
 }
+
+module "efs" {
+  source = "../../modules/efs"
+
+  name_prefix       = "${local.project_name}-${local.environment}"
+  subnet_ids_by_az  = module.network.app_subnet_ids_by_az
+  security_group_id = module.security.efs_security_group_id
+}
