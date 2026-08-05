@@ -14,3 +14,15 @@ variable "secret_arns" {
     error_message = "At least one secret ARN must be provided."
   }
 }
+
+variable "efs_file_system_arn" {
+  type        = string
+  description = "ARN of the EFS file system accessible by ECS tasks."
+  nullable    = false
+}
+
+variable "efs_access_point_arn" {
+  type        = string
+  description = "ARN of the EFS access point used by ECS tasks."
+  nullable    = false
+}
