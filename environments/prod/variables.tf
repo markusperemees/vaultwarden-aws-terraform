@@ -44,3 +44,9 @@ variable "vaultwarden_image_tag" {
   description = "Immutable Vaultwarden image tag deployed to ECS."
   nullable    = false
 }
+
+variable "ecs_desired_count" {
+  description = "Desired number of Vaultwarden ECS tasks."
+  type        = number
+  default     = 2
+}

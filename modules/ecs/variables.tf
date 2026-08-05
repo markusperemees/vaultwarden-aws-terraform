@@ -105,3 +105,9 @@ variable "efs_access_point_id" {
   description = "ID of the EFS access point used by ECS."
   nullable    = false
 }
+
+variable "signups_allowed" {
+  description = "Whether public Vaultwarden registrations are allowed."
+  type        = bool
+  default     = false
+}
