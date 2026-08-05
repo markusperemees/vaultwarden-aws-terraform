@@ -111,3 +111,17 @@ module "ecs" {
   efs_file_system_id  = module.efs.file_system_id
   efs_access_point_id = module.efs.access_point_id
 }
+
+module "cloudwatch" {
+  source = "../../modules/cloudwatch"
+
+  name_prefix = "${local.project_name}-${local.environment}"
+
+  ecs_cluster_name = module.ecs.cluster_name
+  ecs_service_name = module.ecs.service_name
+
+  load_balancer_arn_suffix = module.alb.load_balancer_arn_suffix
+  target_group_arn_suffix  = module.alb.target_group_arn_suffix
+
+  db_instance_identifier = module.rds.db_instance_identifier
+}
