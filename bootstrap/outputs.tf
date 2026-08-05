@@ -12,3 +12,8 @@ output "github_terraform_plan_role_arn" {
   description = "ARN of the GitHub Actions Terraform plan role."
   value       = aws_iam_role.github_terraform_plan.arn
 }
+
+output "github_ecr_push_role_arn" {
+  description = "ARN of the GitHub Actions ECR push role."
+  value       = aws_iam_role.github_ecr_push.arn
+}
