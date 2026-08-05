@@ -51,3 +51,28 @@ resource "aws_iam_role_policy" "task_execution_secrets" {
   role   = aws_iam_role.task_execution.id
   policy = data.aws_iam_policy_document.task_execution_secrets.json
 }
+
+data "aws_iam_policy_document" "task_efs" {
+  statement {
+    effect = "Allow"
+
+    actions = [
+      "elasticfilesystem:ClientMount",
+      "elasticfilesystem:ClientWrite"
+    ]
+
+    resources = [var.efs_file_system_arn]
+
+    condition {
+      test     = "StringEquals"
+      variable = "elasticfilesystem:AccessPointArn"
+      values   = [var.efs_access_point_arn]
+    }
+  }
+}
+
+resource "aws_iam_role_policy" "task_efs" {
+  name   = "${var.name_prefix}-ecs-task-efs"
+  role   = aws_iam_role.task.id
+  policy = data.aws_iam_policy_document.task_efs.json
+}

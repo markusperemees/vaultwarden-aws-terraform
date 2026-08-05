@@ -44,6 +44,9 @@ module "iam" {
     module.secrets.vaultwarden_secret_arn,
     module.rds.master_user_secret_arn
   ]
+
+  efs_file_system_arn  = module.efs.file_system_arn
+  efs_access_point_arn = module.efs.access_point_arn
 }
 
 module "route53" {
@@ -84,4 +87,27 @@ module "efs" {
   name_prefix       = "${local.project_name}-${local.environment}"
   subnet_ids_by_az  = module.network.app_subnet_ids_by_az
   security_group_id = module.security.efs_security_group_id
+}
+
+module "ecs" {
+  source = "../../modules/ecs"
+
+  name_prefix = "${local.project_name}-${local.environment}"
+  aws_region  = var.aws_region
+
+  app_subnet_ids    = values(module.network.app_subnet_ids_by_az)
+  security_group_id = module.security.ecs_security_group_id
+  target_group_arn  = module.alb.target_group_arn
+
+  task_execution_role_arn = module.iam.task_execution_role_arn
+  task_role_arn           = module.iam.task_role_arn
+
+  repository_url = module.ecr.repository_url
+  image_tag      = var.vaultwarden_image_tag
+
+  application_secret_arn = module.secrets.vaultwarden_secret_arn
+  domain_name            = var.vaultwarden_domain_name
+
+  efs_file_system_id  = module.efs.file_system_id
+  efs_access_point_id = module.efs.access_point_id
 }

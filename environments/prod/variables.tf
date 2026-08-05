@@ -38,3 +38,9 @@ variable "vaultwarden_domain_name" {
   description = "Fully qualified domain name used by Vaultwarden."
   nullable    = false
 }
+
+variable "vaultwarden_image_tag" {
+  type        = string
+  description = "Immutable Vaultwarden image tag deployed to ECS."
+  nullable    = false
+}

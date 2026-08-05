@@ -18,3 +18,4 @@ subnets = {
 db_engine_version = "17.10"
 domain_name = "example.tech"
 vaultwarden_domain_name = "vault.example.tech"
+vaultwarden_image_tag = "replace-with-immutable-tag"
