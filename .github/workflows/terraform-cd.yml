@@ -1,0 +1,125 @@
+name: Terraform CD
+
+run-name: Terraform prod apply by @${{ github.actor }}
+
+on:
+  workflow_dispatch:
+    inputs:
+      confirm:
+        description: Type APPLY to deploy production
+        required: true
+        default: "NO"
+
+permissions:
+  id-token: write
+  contents: read
+
+concurrency:
+  group: terraform-prod
+  cancel-in-progress: false
+
+env:
+  AWS_REGION: eu-north-1
+  TF_VERSION: 1.15.8
+  TF_IN_AUTOMATION: true
+  TF_INPUT: false
+  WORKING_DIRECTORY: environments/prod
+
+jobs:
+  plan:
+    name: Terraform plan
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: ${{ env.WORKING_DIRECTORY }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: ${{ env.TF_VERSION }}
+          terraform_wrapper: false
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v6.2.3
+        with:
+          role-to-assume: ${{ vars.AWS_TERRAFORM_PLAN_ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Restore production variables
+        env:
+          TFVARS_PROD_B64: ${{ secrets.TFVARS_PROD_B64 }}
+        run: |
+          set -euo pipefail
+
+          if [ -z "$TFVARS_PROD_B64" ]; then
+            echo "::error::TFVARS_PROD_B64 secret is missing"
+            exit 1
+          fi
+
+          printf '%s' "$TFVARS_PROD_B64" \
+            | base64 --decode \
+            > terraform.tfvars
+
+          chmod 600 terraform.tfvars
+
+      - name: Terraform init
+        run: terraform init -input=false
+
+      - name: Terraform validate
+        run: terraform validate
+
+      - name: Terraform plan
+        run: terraform plan -input=false -out=tfplan
+
+      - name: Upload saved plan
+        uses: actions/upload-artifact@v4
+        with:
+          name: terraform-prod-plan
+          path: environments/prod/tfplan
+          retention-days: 1
+          if-no-files-found: error
+
+  apply:
+    name: Terraform apply
+    needs: plan
+    if: inputs.confirm == 'APPLY'
+    runs-on: ubuntu-latest
+    environment: prod
+
+    defaults:
+      run:
+        working-directory: ${{ env.WORKING_DIRECTORY }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: ${{ env.TF_VERSION }}
+          terraform_wrapper: false
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v6.2.3
+        with:
+          role-to-assume: ${{ vars.AWS_TERRAFORM_APPLY_ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Download saved plan
+        uses: actions/download-artifact@v4
+        with:
+          name: terraform-prod-plan
+          path: environments/prod
+
+      - name: Terraform init
+        run: terraform init -input=false
+
+      - name: Terraform apply
+        run: terraform apply -input=false -auto-approve tfplan
