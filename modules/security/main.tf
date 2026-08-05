@@ -85,3 +85,23 @@ resource "aws_vpc_security_group_ingress_rule" "rds_from_ecs" {
 
   description = "Allow database traffic from ECS tasks."
 }
+
+resource "aws_security_group" "efs" {
+  name        = "${var.name_prefix}-efs-sg"
+  description = "Security group for EFS mount targets."
+  vpc_id      = var.vpc_id
+
+  tags = {
+    Name = "${var.name_prefix}-efs-sg"
+  }
+}
+
+resource "aws_vpc_security_group_ingress_rule" "efs_from_ecs" {
+  security_group_id            = aws_security_group.efs.id
+  referenced_security_group_id = aws_security_group.ecs.id
+  from_port                    = 2049
+  to_port                      = 2049
+  ip_protocol                  = "tcp"
+
+  description = "Allow NFS traffic from ECS tasks."
+}
