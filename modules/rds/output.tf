@@ -27,3 +27,8 @@ output "master_user_secret_arn" {
   description = "ARN of the Secrets Manager secret containing master credentials."
   value       = aws_db_instance.this.master_user_secret[0].secret_arn
 }
+
+output "db_instance_identifier" {
+  description = "Identifier of the RDS instance."
+  value       = aws_db_instance.this.identifier
+}
