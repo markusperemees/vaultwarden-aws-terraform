@@ -57,6 +57,10 @@ resource "aws_ecs_task_definition" "this" {
         {
           name  = "ROCKET_PORT"
           value = tostring(var.container_port)
+        },
+        {
+          name  = "SIGNUPS_ALLOWED"
+          value = tostring(var.signups_allowed)
         }
       ]
 

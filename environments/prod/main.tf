@@ -110,6 +110,10 @@ module "ecs" {
 
   efs_file_system_id  = module.efs.file_system_id
   efs_access_point_id = module.efs.access_point_id
+
+  desired_count = var.ecs_desired_count
+
+  signups_allowed = false
 }
 
 module "cloudwatch" {
