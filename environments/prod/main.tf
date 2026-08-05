@@ -58,3 +58,22 @@ module "acm" {
   domain_name    = var.vaultwarden_domain_name
   hosted_zone_id = module.route53.zone_id
 }
+
+module "alb" {
+  source = "../../modules/alb"
+
+  name_prefix       = "${local.project_name}-${local.environment}"
+  vpc_id            = module.network.vpc_id
+  public_subnet_ids = values(module.network.public_subnet_ids_by_az)
+  security_group_id = module.security.alb_security_group_id
+  certificate_arn   = module.acm.certificate_arn
+}
+
+module "route53_record" {
+  source = "../../modules/route53_record"
+
+  zone_id      = module.route53.zone_id
+  record_name  = var.vaultwarden_domain_name
+  alb_dns_name = module.alb.load_balancer_dns_name
+  alb_zone_id  = module.alb.load_balancer_zone_id
+}
