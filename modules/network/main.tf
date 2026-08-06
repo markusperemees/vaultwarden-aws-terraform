@@ -3,17 +3,17 @@ resource "aws_vpc" "this" {
   enable_dns_support   = true
   enable_dns_hostnames = true
 
-  tags = {
+  tags = merge(var.tags, {
     Name = "${var.name_prefix}-vpc"
-  }
+  })
 }
 
 resource "aws_internet_gateway" "this" {
   vpc_id = aws_vpc.this.id
 
-  tags = {
+  tags = merge(var.tags, {
     Name = "${var.name_prefix}-igw"
-  }
+  })
 }
 
 resource "aws_subnet" "public" {
@@ -22,11 +22,11 @@ resource "aws_subnet" "public" {
   vpc_id                  = aws_vpc.this.id
   availability_zone       = each.key
   cidr_block              = each.value.public_cidr
-  map_public_ip_on_launch = true
+  map_public_ip_on_launch = var.public_subnet_map_public_ip_on_launch
 
-  tags = {
+  tags = merge(var.tags, {
     Name = "${var.name_prefix}-public-${each.key}"
-  }
+  })
 }
 
 resource "aws_subnet" "app" {
@@ -37,9 +37,9 @@ resource "aws_subnet" "app" {
   cidr_block              = each.value.app_cidr
   map_public_ip_on_launch = false
 
-  tags = {
+  tags = merge(var.tags, {
     Name = "${var.name_prefix}-app-${each.key}"
-  }
+  })
 }
 
 resource "aws_subnet" "db" {
@@ -50,9 +50,9 @@ resource "aws_subnet" "db" {
   cidr_block              = each.value.db_cidr
   map_public_ip_on_launch = false
 
-  tags = {
+  tags = merge(var.tags, {
     Name = "${var.name_prefix}-db-${each.key}"
-  }
+  })
 }
 
 resource "aws_route_table" "public" {
@@ -63,9 +63,9 @@ resource "aws_route_table" "public" {
     gateway_id = aws_internet_gateway.this.id
   }
 
-  tags = {
+  tags = merge(var.tags, {
     Name = "${var.name_prefix}-public-rt"
-  }
+  })
 }
 
 resource "aws_route_table_association" "public" {
@@ -79,9 +79,9 @@ resource "aws_eip" "nat" {
   for_each = var.subnets
   domain   = "vpc"
 
-  tags = {
+  tags = merge(var.tags, {
     Name = "${var.name_prefix}-${each.key}-nat-eip"
-  }
+  })
 }
 
 resource "aws_nat_gateway" "this" {
@@ -92,9 +92,9 @@ resource "aws_nat_gateway" "this" {
 
   depends_on = [aws_internet_gateway.this]
 
-  tags = {
+  tags = merge(var.tags, {
     Name = "${var.name_prefix}-${each.key}-nat-gw"
-  }
+  })
 }
 
 resource "aws_route_table" "app" {
@@ -107,9 +107,9 @@ resource "aws_route_table" "app" {
     nat_gateway_id = aws_nat_gateway.this[each.key].id
   }
 
-  tags = {
+  tags = merge(var.tags, {
     Name = "${var.name_prefix}-app-${each.key}-rt"
-  }
+  })
 }
 
 resource "aws_route_table_association" "app" {
@@ -124,9 +124,9 @@ resource "aws_route_table" "db" {
 
   vpc_id = aws_vpc.this.id
 
-  tags = {
+  tags = merge(var.tags, {
     Name = "${var.name_prefix}-db-${each.key}-rt"
-  }
+  })
 }
 
 resource "aws_route_table_association" "db" {
