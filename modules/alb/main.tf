@@ -1,3 +1,10 @@
+locals {
+  http_port      = 80
+  https_port     = 443
+  http_protocol  = "HTTP"
+  https_protocol = "HTTPS"
+}
+
 resource "aws_lb" "this" {
   name               = "${var.name_prefix}-alb"
   internal           = false
@@ -7,49 +14,50 @@ resource "aws_lb" "this" {
   subnets         = var.public_subnet_ids
 
   drop_invalid_header_fields = true
+  enable_deletion_protection = var.enable_deletion_protection
 
-  tags = {
+  tags = merge(var.tags, {
     Name = "${var.name_prefix}-alb"
-  }
+  })
 }
 
 resource "aws_lb_target_group" "this" {
   name        = "${var.name_prefix}-tg"
   port        = var.target_port
-  protocol    = "HTTP"
+  protocol    = local.http_protocol
   vpc_id      = var.vpc_id
   target_type = "ip"
 
-  deregistration_delay = 30
+  deregistration_delay = var.deregistration_delay_seconds
 
   health_check {
     enabled             = true
     path                = var.health_check_path
     port                = "traffic-port"
-    protocol            = "HTTP"
-    matcher             = "200"
-    interval            = 30
-    timeout             = 5
-    healthy_threshold   = 2
-    unhealthy_threshold = 3
+    protocol            = local.http_protocol
+    matcher             = var.health_check_matcher
+    interval            = var.health_check_interval_seconds
+    timeout             = var.health_check_timeout_seconds
+    healthy_threshold   = var.health_check_healthy_threshold
+    unhealthy_threshold = var.health_check_unhealthy_threshold
   }
 
-  tags = {
+  tags = merge(var.tags, {
     Name = "${var.name_prefix}-tg"
-  }
+  })
 }
 
 resource "aws_lb_listener" "http" {
   load_balancer_arn = aws_lb.this.arn
-  port              = 80
-  protocol          = "HTTP"
+  port              = local.http_port
+  protocol          = local.http_protocol
 
   default_action {
     type = "redirect"
 
     redirect {
-      port        = "443"
-      protocol    = "HTTPS"
+      port        = tostring(local.https_port)
+      protocol    = local.https_protocol
       status_code = "HTTP_301"
     }
   }
@@ -57,11 +65,11 @@ resource "aws_lb_listener" "http" {
 
 resource "aws_lb_listener" "https" {
   load_balancer_arn = aws_lb.this.arn
-  port              = 443
-  protocol          = "HTTPS"
+  port              = local.https_port
+  protocol          = local.https_protocol
 
   certificate_arn = var.certificate_arn
-  ssl_policy      = "ELBSecurityPolicy-TLS13-1-2-2021-06"
+  ssl_policy      = var.ssl_policy
 
   default_action {
     type             = "forward"
