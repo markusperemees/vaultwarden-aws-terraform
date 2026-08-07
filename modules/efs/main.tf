@@ -2,35 +2,35 @@ resource "aws_efs_file_system" "this" {
   encrypted = true
 
   lifecycle_policy {
-    transition_to_ia = "AFTER_30_DAYS"
+    transition_to_ia = var.transition_to_ia
   }
 
-  tags = {
+  tags = merge(var.tags, {
     Name = "${var.name_prefix}-efs"
-  }
+  })
 }
 
 resource "aws_efs_access_point" "this" {
   file_system_id = aws_efs_file_system.this.id
 
   posix_user {
-    uid = 1000
-    gid = 1000
+    uid = var.access_point_uid
+    gid = var.access_point_gid
   }
 
   root_directory {
-    path = "/vaultwarden"
+    path = var.access_point_path
 
     creation_info {
-      owner_uid   = 1000
-      owner_gid   = 1000
-      permissions = "0750"
+      owner_uid   = var.access_point_uid
+      owner_gid   = var.access_point_gid
+      permissions = var.access_point_permissions
     }
   }
 
-  tags = {
+  tags = merge(var.tags, {
     Name = "${var.name_prefix}-efs-access-point"
-  }
+  })
 }
 
 resource "aws_efs_mount_target" "this" {
