@@ -1,18 +1,19 @@
 resource "aws_ecr_repository" "this" {
   name                 = var.ecr_repository_name
-  image_tag_mutability = "IMMUTABLE"
+  image_tag_mutability = var.image_tag_mutability
 
   image_scanning_configuration {
-    scan_on_push = true
+    scan_on_push = var.scan_on_push
   }
 
   encryption_configuration {
-    encryption_type = "AES256"
+    encryption_type = var.encryption_type
+    kms_key         = var.encryption_type == "KMS" ? var.kms_key_arn : null
   }
 
-  tags = {
+  tags = merge(var.tags, {
     Name = var.ecr_repository_name
-  }
+  })
 }
 
 resource "aws_ecr_lifecycle_policy" "this" {
@@ -22,13 +23,13 @@ resource "aws_ecr_lifecycle_policy" "this" {
     rules = [
       {
         rulePriority = 1
-        description  = "Delete untagged images older than one day"
+        description  = "Delete untagged images older than ${var.untagged_image_retention_days} day(s)"
 
         selection = {
           tagStatus   = "untagged"
           countType   = "sinceImagePushed"
           countUnit   = "days"
-          countNumber = 1
+          countNumber = var.untagged_image_retention_days
         }
 
         action = {
@@ -37,13 +38,13 @@ resource "aws_ecr_lifecycle_policy" "this" {
       },
       {
         rulePriority = 2
-        description  = "Keep the latest 10 tagged images"
+        description  = "Keep the latest ${var.tagged_image_retention_count} tagged image(s)"
 
         selection = {
           tagStatus      = "tagged"
           tagPatternList = ["*"]
           countType      = "imageCountMoreThan"
-          countNumber    = 10
+          countNumber    = var.tagged_image_retention_count
         }
 
         action = {
