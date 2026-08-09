@@ -1,5 +1,10 @@
 aws_region           = "eu-north-1"
 state_bucket_name    = "vaultwarden-ACCOUNT_ID-eu-north-1-tfstate"
+
+state_noncurrent_version_expiration_days     = 180
+state_noncurrent_versions_to_retain          = 30
+state_abort_incomplete_multipart_upload_days = 7
+
 github_owner         = "your-github-username"
 github_owner_id      = "12345678"
 github_repository    = "your-project-repository"
