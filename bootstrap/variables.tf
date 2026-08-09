@@ -32,24 +32,44 @@ variable "state_bucket_name" {
 
 variable "github_owner_id" {
   type        = string
-  description = "GitHub repository owner."
+  description = "Immutable numeric ID of the GitHub repository owner."
   nullable    = false
+
+  validation {
+    condition     = can(regex("^[0-9]+$", var.github_owner_id))
+    error_message = "github_owner_id must contain only digits."
+  }
 }
 
 variable "github_owner" {
   type        = string
-  description = "GitHub repository owner."
+  description = "Login name of the GitHub repository owner."
   nullable    = false
+
+  validation {
+    condition     = trimspace(var.github_owner) != ""
+    error_message = "github_owner must not be empty."
+  }
 }
 
 variable "github_repository_id" {
   type        = string
-  description = "GitHub repository name."
+  description = "Immutable numeric ID of the GitHub repository."
   nullable    = false
+
+  validation {
+    condition     = can(regex("^[0-9]+$", var.github_repository_id))
+    error_message = "github_repository_id must contain only digits."
+  }
 }
 
 variable "github_repository" {
   type        = string
   description = "GitHub repository name."
   nullable    = false
+
+  validation {
+    condition     = trimspace(var.github_repository) != ""
+    error_message = "github_repository must not be empty."
+  }
 }

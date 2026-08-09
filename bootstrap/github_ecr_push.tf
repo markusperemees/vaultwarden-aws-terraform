@@ -22,7 +22,7 @@ data "aws_iam_policy_document" "github_ecr_push_assume_role" {
       variable = "token.actions.githubusercontent.com:sub"
 
       values = [
-        "repo:${var.github_owner}@${var.github_owner_id}/${var.github_repository}@${var.github_repository_id}:ref:refs/heads/main"
+        "repo:${local.github_repository_subject}:ref:refs/heads/main"
       ]
     }
   }
