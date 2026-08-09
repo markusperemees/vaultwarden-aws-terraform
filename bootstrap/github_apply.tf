@@ -34,11 +34,6 @@ resource "aws_iam_role" "github_terraform_apply" {
   max_session_duration = 3600
 }
 
-resource "aws_iam_role_policy_attachment" "github_apply_power_user" {
-  role       = aws_iam_role.github_terraform_apply.name
-  policy_arn = "arn:aws:iam::aws:policy/PowerUserAccess"
-}
-
 data "aws_iam_policy_document" "github_apply_iam" {
   statement {
     sid = "ManageVaultwardenRoles"
@@ -97,6 +92,26 @@ data "aws_iam_policy_document" "github_apply_iam" {
       test     = "StringEquals"
       variable = "iam:PassedToService"
       values   = ["ecs-tasks.amazonaws.com"]
+    }
+  }
+
+  statement {
+    sid     = "CreateRequiredServiceLinkedRoles"
+    actions = ["iam:CreateServiceLinkedRole"]
+
+    resources = [
+      "arn:${data.aws_partition.github_apply.partition}:iam::${data.aws_caller_identity.github_apply.account_id}:role/aws-service-role/*"
+    ]
+
+    condition {
+      test     = "StringEquals"
+      variable = "iam:AWSServiceName"
+      values = [
+        "ecs.amazonaws.com",
+        "elasticfilesystem.amazonaws.com",
+        "elasticloadbalancing.amazonaws.com",
+        "rds.amazonaws.com"
+      ]
     }
   }
 }
