@@ -37,8 +37,3 @@ resource "aws_iam_role" "github_terraform_plan" {
   name               = "${local.project_name}-github-terraform-plan"
   assume_role_policy = data.aws_iam_policy_document.github_plan_assume_role.json
 }
-
-resource "aws_iam_role_policy_attachment" "github_plan_read_only" {
-  role       = aws_iam_role.github_terraform_plan.name
-  policy_arn = "arn:aws:iam::aws:policy/ReadOnlyAccess"
-}
