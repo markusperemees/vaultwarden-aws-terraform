@@ -30,6 +30,49 @@ variable "state_bucket_name" {
   }
 }
 
+variable "state_noncurrent_version_expiration_days" {
+  type        = number
+  description = "Days before eligible noncurrent Terraform state versions expire."
+  default     = 180
+
+  validation {
+    condition = (
+      var.state_noncurrent_version_expiration_days > 0 &&
+      floor(var.state_noncurrent_version_expiration_days) == var.state_noncurrent_version_expiration_days
+    )
+    error_message = "state_noncurrent_version_expiration_days must be a positive integer."
+  }
+}
+
+variable "state_noncurrent_versions_to_retain" {
+  type        = number
+  description = "Minimum number of newer noncurrent Terraform state versions retained."
+  default     = 30
+
+  validation {
+    condition = (
+      var.state_noncurrent_versions_to_retain >= 1 &&
+      var.state_noncurrent_versions_to_retain <= 100 &&
+      floor(var.state_noncurrent_versions_to_retain) == var.state_noncurrent_versions_to_retain
+    )
+    error_message = "state_noncurrent_versions_to_retain must be an integer between 1 and 100."
+  }
+}
+
+variable "state_abort_incomplete_multipart_upload_days" {
+  type        = number
+  description = "Days before incomplete state bucket multipart uploads are aborted."
+  default     = 7
+
+  validation {
+    condition = (
+      var.state_abort_incomplete_multipart_upload_days > 0 &&
+      floor(var.state_abort_incomplete_multipart_upload_days) == var.state_abort_incomplete_multipart_upload_days
+    )
+    error_message = "state_abort_incomplete_multipart_upload_days must be a positive integer."
+  }
+}
+
 variable "github_owner_id" {
   type        = string
   description = "Immutable numeric ID of the GitHub repository owner."

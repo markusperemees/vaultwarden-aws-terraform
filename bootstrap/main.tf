@@ -14,6 +14,28 @@ resource "aws_s3_bucket_versioning" "terraform_state" {
   }
 }
 
+resource "aws_s3_bucket_lifecycle_configuration" "terraform_state" {
+  bucket = aws_s3_bucket.terraform_state.id
+
+  rule {
+    id     = "terraform-state-retention"
+    status = "Enabled"
+
+    filter {}
+
+    noncurrent_version_expiration {
+      noncurrent_days           = var.state_noncurrent_version_expiration_days
+      newer_noncurrent_versions = var.state_noncurrent_versions_to_retain
+    }
+
+    abort_incomplete_multipart_upload {
+      days_after_initiation = var.state_abort_incomplete_multipart_upload_days
+    }
+  }
+
+  depends_on = [aws_s3_bucket_versioning.terraform_state]
+}
+
 resource "aws_s3_bucket_server_side_encryption_configuration" "terraform_state" {
   bucket = aws_s3_bucket.terraform_state.id
 

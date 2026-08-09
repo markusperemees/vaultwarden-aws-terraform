@@ -65,4 +65,4 @@ The apply role is restricted to jobs using the protected GitHub `prod` environme
 
 ## State protection
 
-The state bucket has versioning, server-side encryption, public-access blocking, and insecure-transport protection enabled. Terraform also prevents accidental bucket destruction.
+The state bucket has versioning, server-side encryption, public-access blocking, and insecure-transport protection enabled. A configurable lifecycle rule retains recent noncurrent state versions while expiring older versions and incomplete multipart uploads. Terraform also prevents accidental bucket destruction.
