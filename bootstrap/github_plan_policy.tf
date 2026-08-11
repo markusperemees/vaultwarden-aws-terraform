@@ -181,6 +181,16 @@ data "aws_iam_policy_document" "github_plan_read" {
   }
 
   statement {
+    sid = "ReadBudgets"
+    actions = [
+      "billing:GetBillingViewData",
+      "budgets:ListTagsForResource",
+      "budgets:ViewBudget"
+    ]
+    resources = ["*"]
+  }
+
+  statement {
     sid = "ReadEncryptionMetadata"
     actions = [
       "kms:DescribeKey",

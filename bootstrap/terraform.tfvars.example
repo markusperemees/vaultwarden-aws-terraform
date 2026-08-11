@@ -9,3 +9,5 @@ github_owner         = "your-github-username"
 github_owner_id      = "12345678"
 github_repository    = "your-project-repository"
 github_repository_id = "123456789"
+
+monthly_budget_limit_usd = 30

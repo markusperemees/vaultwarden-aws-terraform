@@ -9,6 +9,7 @@ Creates the foundational AWS resources required by the Vaultwarden Terraform wor
 - Terraform plan role
 - Terraform apply role
 - ECR image push role
+- Account-wide monthly AWS cost budget
 
 ## Prerequisites
 
@@ -62,6 +63,10 @@ Use the Terraform outputs to configure these GitHub repository variables:
 - `AWS_ECR_PUSH_ROLE_ARN`
 
 The apply role is restricted to jobs using the protected GitHub `prod` environment.
+
+## Cost budget
+
+The bootstrap layer creates a recurring account-wide monthly AWS cost budget. The default limit is `30 USD` and can be changed with `monthly_budget_limit_usd`. Notifications are intentionally configured separately through SNS.
 
 ## State protection
 

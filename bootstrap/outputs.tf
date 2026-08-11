@@ -22,3 +22,13 @@ output "github_terraform_apply_role_arn" {
   description = "ARN of the GitHub Actions Terraform apply role."
   value       = aws_iam_role.github_terraform_apply.arn
 }
+
+output "monthly_account_budget_arn" {
+  description = "ARN of the account-wide monthly AWS cost budget."
+  value       = aws_budgets_budget.monthly_account_cost.arn
+}
+
+output "monthly_account_budget_name" {
+  description = "Name of the account-wide monthly AWS cost budget."
+  value       = aws_budgets_budget.monthly_account_cost.name
+}

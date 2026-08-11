@@ -116,3 +116,14 @@ variable "github_repository" {
     error_message = "github_repository must not be empty."
   }
 }
+
+variable "monthly_budget_limit_usd" {
+  type        = number
+  description = "Account-wide monthly AWS cost budget in USD. Notifications are configured separately."
+  default     = 30
+
+  validation {
+    condition     = var.monthly_budget_limit_usd > 0
+    error_message = "monthly_budget_limit_usd must be greater than zero."
+  }
+}
