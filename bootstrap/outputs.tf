@@ -32,3 +32,8 @@ output "monthly_account_budget_name" {
   description = "Name of the account-wide monthly AWS cost budget."
   value       = aws_budgets_budget.monthly_account_cost.name
 }
+
+output "alert_topic_arn" {
+  description = "ARN of the shared SNS topic for AWS cost and operational alerts."
+  value       = aws_sns_topic.alerts.arn
+}

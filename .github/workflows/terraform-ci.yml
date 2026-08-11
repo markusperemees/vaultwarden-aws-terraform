@@ -98,6 +98,7 @@ jobs:
       TF_VAR_github_owner_id: ${{ github.repository_owner_id }}
       TF_VAR_github_repository: ${{ github.event.repository.name }}
       TF_VAR_github_repository_id: ${{ github.repository_id }}
+      TF_VAR_alert_email_address: ${{ vars.AWS_ALERT_EMAIL }}
 
     steps:
       - name: Checkout repository
