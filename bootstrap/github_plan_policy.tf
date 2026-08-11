@@ -191,6 +191,17 @@ data "aws_iam_policy_document" "github_plan_read" {
   }
 
   statement {
+    sid = "ReadNotifications"
+    actions = [
+      "sns:GetSubscriptionAttributes",
+      "sns:GetTopicAttributes",
+      "sns:ListSubscriptionsByTopic",
+      "sns:ListTagsForResource"
+    ]
+    resources = ["*"]
+  }
+
+  statement {
     sid = "ReadEncryptionMetadata"
     actions = [
       "kms:DescribeKey",

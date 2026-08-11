@@ -127,3 +127,14 @@ variable "monthly_budget_limit_usd" {
     error_message = "monthly_budget_limit_usd must be greater than zero."
   }
 }
+
+variable "alert_email_address" {
+  type        = string
+  description = "Email address subscribed to the shared AWS cost and operational alert topic."
+  nullable    = false
+
+  validation {
+    condition     = can(regex("^[^[:space:]@]+@[^[:space:]@]+\\.[^[:space:]@]+$", var.alert_email_address))
+    error_message = "alert_email_address must be a valid email address."
+  }
+}

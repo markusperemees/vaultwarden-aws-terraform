@@ -11,3 +11,4 @@ github_repository    = "your-project-repository"
 github_repository_id = "123456789"
 
 monthly_budget_limit_usd = 30
+alert_email_address      = "alerts@example.com"

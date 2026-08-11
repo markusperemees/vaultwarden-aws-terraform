@@ -10,6 +10,7 @@ Creates the foundational AWS resources required by the Vaultwarden Terraform wor
 - Terraform apply role
 - ECR image push role
 - Account-wide monthly AWS cost budget
+- Shared SNS topic and email subscription for cost and operational alerts
 
 ## Prerequisites
 
@@ -66,7 +67,9 @@ The apply role is restricted to jobs using the protected GitHub `prod` environme
 
 ## Cost budget
 
-The bootstrap layer creates a recurring account-wide monthly AWS cost budget. The default limit is `30 USD` and can be changed with `monthly_budget_limit_usd`. Notifications are intentionally configured separately through SNS.
+The bootstrap layer creates a recurring account-wide monthly AWS cost budget. The default limit is `30 USD` and can be changed with `monthly_budget_limit_usd`.
+
+Budget alerts are published to the shared SNS topic at 50%, 80%, and 100% of actual monthly spend, and at 100% of forecasted monthly spend. Set `alert_email_address` to the notification recipient. After the first apply, the recipient must confirm the subscription using the link sent by Amazon SNS.
 
 ## State protection
 

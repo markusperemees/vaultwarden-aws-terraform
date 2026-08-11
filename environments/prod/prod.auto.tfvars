@@ -66,4 +66,6 @@ cloudwatch_ecs_memory_threshold             = 80
 cloudwatch_rds_cpu_threshold                = 80
 cloudwatch_rds_free_storage_threshold_bytes = 5368709120
 cloudwatch_alb_unhealthy_target_threshold   = 0
-cloudwatch_alarm_actions                    = []
+cloudwatch_alarm_actions = [
+  "arn:aws:sns:eu-north-1:636499496034:vaultwarden-prod-alerts"
+]
