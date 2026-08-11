@@ -51,23 +51,6 @@ jobs:
           role-to-assume: ${{ vars.AWS_TERRAFORM_PLAN_ROLE_ARN }}
           aws-region: ${{ env.AWS_REGION }}
 
-      - name: Restore production variables
-        env:
-          TFVARS_PROD_B64: ${{ secrets.TFVARS_PROD_B64 }}
-        run: |
-          set -euo pipefail
-
-          if [ -z "$TFVARS_PROD_B64" ]; then
-            echo "::error::TFVARS_PROD_B64 secret is missing"
-            exit 1
-          fi
-
-          printf '%s' "$TFVARS_PROD_B64" \
-            | base64 --decode \
-            > terraform.tfvars
-
-          chmod 600 terraform.tfvars
-
       - name: Terraform init
         run: terraform init -input=false
 
