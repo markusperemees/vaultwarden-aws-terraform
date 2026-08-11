@@ -63,7 +63,8 @@ data "aws_iam_policy_document" "github_plan_read" {
       "s3:GetBucketVersioning",
       "s3:GetBucketWebsite",
       "s3:GetEncryptionConfiguration",
-      "s3:GetLifecycleConfiguration"
+      "s3:GetLifecycleConfiguration",
+      "s3:GetReplicationConfiguration"
     ]
     resources = [aws_s3_bucket.terraform_state.arn]
   }
