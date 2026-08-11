@@ -8,6 +8,7 @@ on:
       - "modules/**"
       - "environments/prod/**"
       - ".github/workflows/terraform-ci.yml"
+      - ".github/workflows/terraform-cd.yml"
   workflow_dispatch:
 
 permissions:
@@ -153,29 +154,8 @@ jobs:
           role-session-name: terraform-ci-${{ github.run_id }}
           aws-region: ${{ env.AWS_REGION }}
 
-      - name: Restore production variables
-        env:
-          TFVARS_PROD_B64: ${{ secrets.TFVARS_PROD_B64 }}
-        run: |
-          set -euo pipefail
-
-          if [ -z "$TFVARS_PROD_B64" ]; then
-            echo "::error::TFVARS_PROD_B64 secret is missing"
-            exit 1
-          fi
-
-          printf '%s' "$TFVARS_PROD_B64" \
-            | base64 --decode \
-            > terraform.tfvars
-
-          chmod 600 terraform.tfvars
-
       - name: Terraform init
         run: terraform init -input=false
 
       - name: Terraform plan
         run: terraform plan -input=false -no-color -lock-timeout=5m
-
-      - name: Remove production variables
-        if: always()
-        run: rm -f terraform.tfvars
