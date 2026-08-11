@@ -5,12 +5,15 @@ Creates the shared persistent file storage used by Vaultwarden ECS tasks.
 ## Resources
 
 - Encrypted Amazon EFS file system
+- EFS automatic backup policy
 - EFS access point for the Vaultwarden data directory
 - One EFS mount target per application subnet / Availability Zone
 
 ## Key defaults
 
 - Encryption at rest enabled
+- Automatic backups enabled through AWS Backup
+- File system destruction blocked with Terraform `prevent_destroy`
 - Files transition to EFS Infrequent Access after 30 days without access
 - Access point path: `/vaultwarden`
 - POSIX UID/GID: `1000`

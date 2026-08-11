@@ -5,9 +5,21 @@ resource "aws_efs_file_system" "this" {
     transition_to_ia = var.transition_to_ia
   }
 
+  lifecycle {
+    prevent_destroy = true
+  }
+
   tags = merge(var.tags, {
     Name = "${var.name_prefix}-efs"
   })
+}
+
+resource "aws_efs_backup_policy" "this" {
+  file_system_id = aws_efs_file_system.this.id
+
+  backup_policy {
+    status = "ENABLED"
+  }
 }
 
 resource "aws_efs_access_point" "this" {
