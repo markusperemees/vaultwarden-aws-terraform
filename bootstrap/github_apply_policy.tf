@@ -147,6 +147,7 @@ data "aws_iam_policy_document" "github_apply_foundation" {
       "elasticfilesystem:DescribeMountTargetSecurityGroups",
       "elasticfilesystem:ListTagsForResource",
       "elasticfilesystem:ModifyMountTargetSecurityGroups",
+      "elasticfilesystem:PutBackupPolicy",
       "elasticfilesystem:PutLifecycleConfiguration",
       "elasticfilesystem:TagResource",
       "elasticfilesystem:UntagResource"
