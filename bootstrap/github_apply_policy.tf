@@ -243,7 +243,9 @@ data "aws_iam_policy_document" "github_apply_application" {
   }
 
   statement {
-    sid = "ManageMonitoring"
+    sid    = "ManageMonitoring"
+    effect = "Allow"
+
     actions = [
       "cloudwatch:DeleteAlarms",
       "cloudwatch:DescribeAlarms",
@@ -260,6 +262,33 @@ data "aws_iam_policy_document" "github_apply_application" {
       "logs:TagResource",
       "logs:UntagResource"
     ]
+
+    resources = ["*"]
+  }
+
+  statement {
+    sid    = "ManageCloudWatchDashboard"
+    effect = "Allow"
+
+    actions = [
+      "cloudwatch:GetDashboard",
+      "cloudwatch:PutDashboard",
+      "cloudwatch:DeleteDashboards"
+    ]
+
+    resources = [
+      "arn:aws:cloudwatch::636499496034:dashboard/vaultwarden-prod-operations"
+    ]
+  }
+
+  statement {
+    sid    = "ListCloudWatchDashboards"
+    effect = "Allow"
+
+    actions = [
+      "cloudwatch:ListDashboards"
+    ]
+
     resources = ["*"]
   }
 
