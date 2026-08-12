@@ -360,85 +360,85 @@ resource "aws_cloudwatch_dashboard" "service_health" {
               var.db_instance_identifier,
               {
                 stat  = "Average"
-            label = "Freeable memory"
-          }
-        ],
-        [
-          "AWS/RDS",
-          "DatabaseConnections",
-          "DBInstanceIdentifier",
-          var.db_instance_identifier,
-          {
-            stat  = "Average"
-            label = "DB connections"
-          }
-        ],
-        [
-          "AWS/RDS",
-          "FreeStorageSpace",
-          "DBInstanceIdentifier",
-          var.db_instance_identifier,
-          {
-            stat  = "Minimum"
-            label = "Free storage"
-          }
-        ],
-        [
-          "AWS/RDS",
-          "SwapUsage",
-          "DBInstanceIdentifier",
-          var.db_instance_identifier,
-          {
-            stat  = "Average"
-            label = "Swap usage"
-          }
-        ]
-      ]
-    }
-  },
+                label = "Freeable memory"
+              }
+            ],
+            [
+              "AWS/RDS",
+              "DatabaseConnections",
+              "DBInstanceIdentifier",
+              var.db_instance_identifier,
+              {
+                stat  = "Average"
+                label = "DB connections"
+              }
+            ],
+            [
+              "AWS/RDS",
+              "FreeStorageSpace",
+              "DBInstanceIdentifier",
+              var.db_instance_identifier,
+              {
+                stat  = "Minimum"
+                label = "Free storage"
+              }
+            ],
+            [
+              "AWS/RDS",
+              "SwapUsage",
+              "DBInstanceIdentifier",
+              var.db_instance_identifier,
+              {
+                stat  = "Average"
+                label = "Swap usage"
+              }
+            ]
+          ]
+        }
+      },
 
-  {
-    type   = "log"
-    x      = 0
-    y      = 26
-    width  = 24
-    height = 6
+      {
+        type   = "log"
+        x      = 0
+        y      = 26
+        width  = 24
+        height = 6
 
-    properties = {
-      title  = "Vaultwarden — Recent WARN / ERROR Logs"
-      region = data.aws_region.current.region
-      view   = "table"
+        properties = {
+          title  = "Vaultwarden — Recent WARN / ERROR Logs"
+          region = data.aws_region.current.region
+          view   = "table"
 
-      query = join("\n", [
-        "SOURCE '/ecs/vaultwarden-prod'",
-        "| fields @timestamp, @message, @logStream",
-        "| filter @message like /(?i)(error|warn|warning|fatal|panic)/",
-        "| sort @timestamp desc",
-        "| limit 50"
-      ])
-    }
-  },
-  {
-    type   = "log"
-    x      = 0
-    y      = 32
-    width  = 24
-    height = 6
+          query = join("\n", [
+            "SOURCE '/ecs/vaultwarden-prod'",
+            "| fields @timestamp, @message, @logStream",
+            "| filter @message like /(?i)(error|warn|warning|fatal|panic)/",
+            "| sort @timestamp desc",
+            "| limit 50"
+          ])
+        }
+      },
+      {
+        type   = "log"
+        x      = 0
+        y      = 32
+        width  = 24
+        height = 6
 
-    properties = {
-      title  = "PostgreSQL — Recent Errors"
-      region = data.aws_region.current.region
-      view   = "table"
+        properties = {
+          title  = "PostgreSQL — Recent Errors"
+          region = data.aws_region.current.region
+          view   = "table"
 
-      query = join("\n", [
-        "SOURCE '/aws/rds/instance/vaultwarden-prod-postgres/postgresql'",
-        "| fields @timestamp, @message",
-        "| filter @message like /(?i)(error|fatal|panic|deadlock|out of memory)/",
-        "| sort @timestamp desc",
-        "| limit 50"
-      ])
-    }
-  }
-]
+          query = join("\n", [
+            "SOURCE '/aws/rds/instance/vaultwarden-prod-postgres/postgresql'",
+            "| fields @timestamp, @message",
+            "| filter @message like /(?i)(error|fatal|panic|deadlock|out of memory)/",
+            "| sort @timestamp desc",
+            "| limit 50"
+          ])
+        }
+      }
+    ]
   })
 }
