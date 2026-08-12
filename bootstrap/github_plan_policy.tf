@@ -70,6 +70,19 @@ data "aws_iam_policy_document" "github_plan_read" {
   }
 
   statement {
+    sid    = "ReadCloudWatchDashboard"
+    effect = "Allow"
+
+    actions = [
+      "cloudwatch:GetDashboard"
+    ]
+
+    resources = [
+      "arn:aws:cloudwatch::636499496034:dashboard/vaultwarden-prod-operations"
+    ]
+  }
+
+  statement {
     sid = "ReadIamConfiguration"
     actions = [
       "iam:GetOpenIDConnectProvider",
