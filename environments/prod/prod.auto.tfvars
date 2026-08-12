@@ -41,7 +41,7 @@ vaultwarden_signups_allowed = false
 
 # ECS
 
-ecs_desired_count         = 2
+ecs_desired_count         = 1
 ecs_cpu                   = 256
 ecs_memory                = 512
 ecs_log_retention_in_days = 30

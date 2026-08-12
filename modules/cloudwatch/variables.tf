@@ -89,7 +89,7 @@ variable "ecs_memory_threshold" {
 variable "rds_cpu_threshold" {
   type        = number
   description = "RDS CPU utilization alarm threshold in percent."
-  default     = 80
+  default     = 90
 
   validation {
     condition     = var.rds_cpu_threshold > 0 && var.rds_cpu_threshold <= 100
@@ -225,6 +225,53 @@ variable "alarm_actions" {
   validation {
     condition     = alltrue([for action in var.alarm_actions : trimspace(action) != ""])
     error_message = "alarm_actions must contain only non-empty ARN strings."
+  }
+}
+
+variable "alb_target_5xx_threshold" {
+  type        = number
+  description = "Target-generated HTTP 5xx responses per period required to trigger the alarm."
+  default     = 5
+
+  validation {
+    condition     = var.alb_target_5xx_threshold > 0
+    error_message = "alb_target_5xx_threshold must be greater than 0."
+  }
+}
+
+
+variable "alb_elb_5xx_threshold" {
+  type        = number
+  description = "ALB-generated HTTP 5xx responses per period required to trigger the alarm."
+  default     = 1
+
+  validation {
+    condition     = var.alb_elb_5xx_threshold > 0
+    error_message = "alb_elb_5xx_threshold must be greater than 0."
+  }
+}
+
+
+variable "alb_latency_threshold_seconds" {
+  type        = number
+  description = "ALB p95 target response-time alarm threshold in seconds."
+  default     = 2
+
+  validation {
+    condition     = var.alb_latency_threshold_seconds > 0
+    error_message = "alb_latency_threshold_seconds must be greater than 0."
+  }
+}
+
+
+variable "rds_freeable_memory_threshold" {
+  type        = number
+  description = "RDS freeable memory alarm threshold in bytes."
+  default     = 104857600 # 100 MiB
+
+  validation {
+    condition     = var.rds_freeable_memory_threshold > 0
+    error_message = "rds_freeable_memory_threshold must be greater than 0."
   }
 }
 
